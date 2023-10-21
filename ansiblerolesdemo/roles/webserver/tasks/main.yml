@@ -1,0 +1,33 @@
+---
+- name: update
+  command: apt-get update -y
+
+- name: upgrade
+  command: apt-get upgrade -y
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+  notify:
+    - Restart Nginx
+
+- name: Copy Nginx configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify:
+    - Restart Nginx
+
+- name: Deploy Website
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  notify:
+    - Restart Nginx
+
+- name: Ensure Nginx is enabled and running
+  service:
+    name: nginx
+    enabled: yes
+    state: started
